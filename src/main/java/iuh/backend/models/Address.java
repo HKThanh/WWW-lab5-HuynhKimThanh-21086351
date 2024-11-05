@@ -24,7 +24,7 @@ public class Address {
     private String city;
 
     @Column(name = "country")
-    private CountryCode country;
+    private int country;
 
     @Column(name = "number", length = 20)
     private String number;
@@ -32,7 +32,7 @@ public class Address {
     @Column(name = "zipcode", length = 7)
     private String zipcode;
 
-    public Address(String number, String street, String city, String zipcode, CountryCode country) {
+    public Address(String number, String street, String city, String zipcode, int country) {
         this.street = street;
         this.city = city;
         this.country = country;
