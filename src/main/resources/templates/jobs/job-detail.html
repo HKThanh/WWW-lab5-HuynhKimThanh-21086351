@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail of job</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-
+T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous">
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-
+C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <a href="/jobs/list-jobs" class="col-4">Back to list</a>
+            <h1 class="h1 col-8">Detail of job</h1>
+        </div>
+        <br/>
+        <br/>
+        <div class="row">
+            <div th:if="${job == null}" class="fs-5">
+                <h2 class="h2 text-center">Job not found</h2>
+            </div>
+            <div th:if="${job != null}" class="fs-5">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Company Name:</label>
+                    </div>
+                    <div class="col-8">
+                        <span th:text="${job.getCompany().getCompName()}"></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="fs-3 fw-bold">Company contact:</label>
+                        </div>
+                        <div class="col-8">
+                            <ul>
+                                <li th:text="${job.getCompany().getPhone()}"></li>
+                                <li th:text="${job.getCompany().getEmail()}"></li>
+                                <li th:text="${job.getCompany().getWebUrl()}"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Job Title:</label>
+                    </div>
+                    <div class="col-8">
+                        <span th:text="${job.getJobName()}"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Description:</label>
+                    </div>
+                    <div class="col-8">
+                        <span th:text="${job.getJobDesc()}"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Location:</label>
+                    </div>
+                    <div class="col-8">
+                        <span th:text="${job.getCompany().getAddress().toString()}"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Requirements:</label>
+                    </div>
+                    <div class="col-8" th:if="${skills.size() > 0}">
+                        <ul>
+                            <li th:each="skill : ${skills}" th:text="${skill.getSkillName()}" class="fs-4"></li>
+                        </ul>
+                    </div>
+                    <div class="col-8" th:if="${skills.size() == 0}">
+                        <span>No requirements</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">If you want to apply. Click here:</label>
+                    </div>
+                    <div class="col-8">
+                        <a th:href="@{'/job/apply/' + ${job.id}}" class="btn btn-success fs-3">Apply</a>
+                    </div>
+                </div>
+        </div>
+        <div class="row">
+        </div>
+    </div>
+</body>
+</html>

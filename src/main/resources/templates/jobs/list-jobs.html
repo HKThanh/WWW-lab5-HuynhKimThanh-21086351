@@ -30,14 +30,19 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
 </head>
 <body>
 <div class="container">
-<h1 class="h1 text-center">JOBS</h1>
+    <div class="row">
+        <h1 class="h1 text-center">JOBS</h1>
+        <div th:if="${account.equals(null)}">
+            <a href="/login" class="col-4">Login</a>
+        </div>
+    </div>
 <table class="table">
     <tr>
         <th>Company</th>
         <th>Title</th>
         <th>Description</th>
         <th>Location</th>
-        <th>Apply</th>
+        <th>Detail</th>
     </tr>
     <tr th:each="job : ${jobs}">
         <td th:text="${job.getCompany().getCompName()}"></td>
@@ -45,7 +50,7 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         <td th:text="${job.getJobDesc()}"></td>
         <td th:text="${job.getCompany().getAddress().toString()}"></td>
         <td>
-            <a th:href="@{'/job/apply/' + ${job.id}}">Apply</a>
+            <a th:href="@{'/jobs/job-detail/' + ${job.id}}">Detail</a>
         </td>
     </tr>
 </table>

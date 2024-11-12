@@ -27,4 +27,8 @@ public class SkillService {
     public Skill update(Skill skill) {
         return skillRepository.save(skill);
     }
+
+    public Skill findById(Skill skill) {
+        return skillRepository.findById(skill.getId()).orElse(null);
+    }
 }
