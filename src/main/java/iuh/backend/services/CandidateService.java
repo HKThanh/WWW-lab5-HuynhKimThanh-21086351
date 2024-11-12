@@ -19,4 +19,26 @@ public class CandidateService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         return candidateRepository.findAll(pageable);
     }
+
+    public Candidate save(Candidate candidate) {
+        return candidateRepository.save(candidate);
+    }
+
+    public Candidate findById(Long id) {
+        return candidateRepository.findById(id).orElse(null);
+    }
+
+    public void deleteById(Long id) {
+        candidateRepository.deleteById(id);
+    }
+
+    public Candidate update(Candidate candidate) {
+        return candidateRepository.save(candidate);
+    }
+
+    public Page<Candidate> search(String keyword, int pageNo, int pageSize, String sortBy, String sortDirection) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        return candidateRepository.findByFullNameContaining(keyword, pageable);
+    }
 }

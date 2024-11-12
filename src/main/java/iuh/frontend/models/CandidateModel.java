@@ -14,4 +14,8 @@ public class CandidateModel {
     public Page<Candidate> findAll(int pageNo, int pageSize, String sortBy, String sortDir) {
         return candidateService.findAll(pageNo, pageSize, sortBy, sortDir);
     }
+
+    public Candidate save(Candidate candidate) {
+        return candidateService.save(candidate);
+    }
 }
