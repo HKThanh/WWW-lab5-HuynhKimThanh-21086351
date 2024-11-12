@@ -10,7 +10,6 @@ import lombok.*;
 @Table(name = "address")
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,5 +37,11 @@ public class Address {
         this.country = country;
         this.number = number;
         this.zipcode = zipcode;
+    }
+
+    @Override
+    public String toString() {
+        CountryCode countryCode = CountryCode.getByCode(this.country);
+        return number + ", " + street + ", " + city + ", " + countryCode.getName();
     }
 }

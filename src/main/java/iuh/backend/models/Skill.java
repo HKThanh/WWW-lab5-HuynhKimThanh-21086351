@@ -23,4 +23,8 @@ public class Skill {
     @Column(name = "type")
     private Byte type;
 
+    @Override
+    public String toString() {
+        return skillName + ": " + skillDescription;
+    }
 }
