@@ -235,6 +235,24 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('#skillModal input[type="text"]');
+    const skillList = document.querySelector('#skillList');
+    const skills = Array.from(skillList.querySelectorAll('tr'));
+
+    searchInput.addEventListener('input', () => {
+      const searchValue = searchInput.value.trim().toLowerCase();
+      skills.forEach((skill) => {
+        const skillName = skill.querySelector('td').textContent.trim().toLowerCase();
+        if (skillName.includes(searchValue)) {
+          skill.style.display = '';
+        } else {
+          skill.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
     // Enable/disable skill level dropdown based on checkbox state
     document.querySelectorAll('.skill-checkbox').forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
