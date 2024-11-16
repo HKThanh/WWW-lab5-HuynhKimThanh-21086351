@@ -1,5 +1,6 @@
 package iuh.backend.services;
 
+import iuh.backend.models.Company;
 import iuh.backend.models.Job;
 import iuh.backend.repositories.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class JobService {
@@ -24,5 +27,13 @@ public class JobService {
 
     public Job findById(Long id) {
         return jobRepository.findById(id).orElse(null);
+    }
+
+    public Page<Job> findByCompany(Company company, int page, int size) {
+        return jobRepository.findByCompany(company, PageRequest.of(page, size));
+    }
+
+    public List<Job> findTop10Job() {
+        return jobRepository.findTop10ByOrderByIdDesc();
     }
 }

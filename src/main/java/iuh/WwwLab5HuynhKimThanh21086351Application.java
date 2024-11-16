@@ -1,10 +1,14 @@
 package iuh;
 
 import com.neovisionaries.i18n.CountryCode;
-import iuh.backend.models.Address;
-import iuh.backend.models.Candidate;
+import iuh.backend.models.*;
 import iuh.backend.repositories.AddressRepository;
 import iuh.backend.repositories.CandidateRepository;
+import iuh.backend.services.AddressService;
+import iuh.backend.services.CompanyService;
+import iuh.backend.services.JobService;
+import iuh.backend.services.SkillService;
+import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,29 +26,22 @@ public class WwwLab5HuynhKimThanh21086351Application  {
     }
 
 //    @Autowired
-//    private CandidateRepository candidateRepository;
+//    CompanyService companyService;
 //    @Autowired
-//    private AddressRepository addressRepository;
-
+//    JobService jobService;
+//    @Autowired
+//    SkillService skillService;
+//
 //    @Bean
 //    CommandLineRunner initData() {
 //        return args -> {
-//            Random rnd = new Random();
-//            for (int i = 1; i < 1000; i++) {
-//                Address add = new Address(rnd.nextInt(1, 1000) + "", "Quang Trung", "HCM",
-//                        rnd.nextInt(70000, 80000) + "", CountryCode.VN.getNumeric());
-//                addressRepository.save(add);
-//
-//                Candidate can = new Candidate();
-//                can.setAddress(add);
-//                can.setDob(LocalDate.of(1998, rnd.nextInt(1, 13), rnd.nextInt(1, 29)));
-//                can.setAddress(add);
-//                can.setPhone(rnd.nextLong(1111111111L, 9999999999L) + "");
-//                can.setEmail("candidate" + i + "@gmail.com");
-//                can.setFullName("Candidate " + i);
-//                candidateRepository.save(can);
-//
-//                System.out.println("Save: " + can);
+//            Faker faker = new Faker();
+//            for (int i = 1; i < 11; i++) {
+//                Skill skill = new Skill();
+//                skill.setSkillName(faker.job().keySkills());
+//                skill.setSkillDescription("Description for " + skill.getSkillName());
+//                skill.setType((byte) 0);
+//                skillService.save(skill);
 //            }
 //        };
 //    }

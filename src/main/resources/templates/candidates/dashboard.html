@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dash Board</title>
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-
+T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+  <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-
+C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+          crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="display-4 mb-5">
+    Hello <span th:text="${candidate.getFullName()}"></span>, Welcome Back!
+  </h1>
+
+  <!-- Recommended Jobs Section -->
+  <section class="mb-5">
+    <h2 class="h4 mb-3 fw-bold">Recommended Jobs</h2>
+    <div class="row g-4">
+      <div th:each="job : ${recommendedJobs}" class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="h5 card-title" th:text="${job.jobName}"></h3>
+            <p class="text-muted mb-3" th:text="${job.company.compName}"></p>
+            <a th:href="@{'/jobs/job-detail/' + ${job.id}}" class="btn btn-primary">View Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recommended Skills Section -->
+<!--  <section class="mb-5">-->
+<!--    <h2 class="h4 mb-3 fw-bold">Recommended Skills to Learn</h2>-->
+<!--    <div class="row g-4">-->
+<!--      <div th:each="skill : ${recommendedSkills}" class="col-md-4">-->
+<!--        <div class="card shadow-sm">-->
+<!--          <div class="card-body">-->
+<!--            <h3 class="h5 card-title" th:text="${skill.skillName}">Skill Name</h3>-->
+<!--            <p class="text-muted mb-3">This skill appears in multiple job postings</p>-->
+<!--            <div class="mb-3">-->
+<!--              <h4 class="fw-semibold mb-2">Why learn this?</h4>-->
+<!--              <p class="text-muted" th:text="${skill.skillDescription}">Description of why this skill would be valuable</p>-->
+<!--            </div>-->
+<!--            <button class="btn btn-success">Learn More</button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </section>-->
+
+  <!-- Your Skills Section -->
+  <section>
+    <h2 class="h4 mb-3 fw-bold">Your Skills</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row g-4">
+          <div th:each="skill : ${skillsForCandidate}" class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+              <div>
+                <h3 class="h6 mb-0" th:text="${skill.skillName}"></h3>
+                <p class="text-muted small mb-0">Level: <span th:text="${skill.type}"></span></p>
+              </div>
+              <button class="btn btn-link text-decoration-none">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

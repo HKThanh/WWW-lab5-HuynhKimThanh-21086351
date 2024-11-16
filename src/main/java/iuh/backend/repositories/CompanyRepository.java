@@ -13,4 +13,6 @@ public interface CompanyRepository extends PagingAndSortingRepository<Company, L
     Company save(Company company);
     Optional<Company> findById(long id);
     List<Company> findAll();
+
+    Company findByEmail(String email);
 }

@@ -1,5 +1,6 @@
 package iuh.backend.models;
 
+import iuh.backend.enums.SkillType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +22,8 @@ public class Skill {
     private String skillName;
 
     @Column(name = "type")
-    private Byte type;
+    @Enumerated(EnumType.ORDINAL)
+    private SkillType type;
 
     @Override
     public String toString() {

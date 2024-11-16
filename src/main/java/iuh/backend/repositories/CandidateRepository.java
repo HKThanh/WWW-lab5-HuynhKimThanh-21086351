@@ -17,4 +17,6 @@ public interface CandidateRepository extends PagingAndSortingRepository<Candidat
     void deleteById(Long id);
 
     Page<Candidate> findByFullNameContaining(String keyword, Pageable pageable);
+
+    Candidate findByEmail(String username);
 }

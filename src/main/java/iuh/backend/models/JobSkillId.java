@@ -14,10 +14,8 @@ import java.util.Objects;
 @Embeddable
 public class JobSkillId implements Serializable {
     private static final long serialVersionUID = -5350321685425254741L;
-    @Column(name = "job_id", nullable = false)
     private Long jobId;
 
-    @Column(name = "skill_id", nullable = false)
     private Long skillId;
 
     @Override

@@ -19,4 +19,8 @@ public class JobSkillService {
     public List<JobSkill> findByJobId(Long jobId) {
         return jobSkillRepository.findByJobId(jobId);
     }
+
+    public void save(JobSkill jobSkill) {
+        jobSkillRepository.save(jobSkill);
+    }
 }

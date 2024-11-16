@@ -28,7 +28,11 @@ public class SkillService {
         return skillRepository.save(skill);
     }
 
-    public Skill findById(Skill skill) {
-        return skillRepository.findById(skill.getId()).orElse(null);
+    public Skill findById(Long skill) {
+        return skillRepository.findById(skill).orElse(null);
+    }
+
+    public Iterable<Skill> findAll() {
+        return skillRepository.findAll();
     }
 }

@@ -1,5 +1,6 @@
 package iuh.backend.models;
 
+import iuh.backend.enums.SkillLevel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,7 @@ public class CandidateSkill {
     private String moreInfos;
 
     @Column(name = "skill_level", nullable = false)
-    private Byte skillLevel;
+    @Enumerated(EnumType.ORDINAL)
+    private SkillLevel skillLevel;
 
 }

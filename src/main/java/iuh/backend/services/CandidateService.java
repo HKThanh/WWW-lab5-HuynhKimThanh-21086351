@@ -41,4 +41,8 @@ public class CandidateService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         return candidateRepository.findByFullNameContaining(keyword, pageable);
     }
+
+    public Candidate findByEmail(String username) {
+        return candidateRepository.findByEmail(username);
+    }
 }

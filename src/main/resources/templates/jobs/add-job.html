@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add job</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-
+T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous">
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-
+C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <form method="post" action="/jobs/add">
+            <div class="row">
+                <a href="/jobs/list-jobs" class="col-4">Back to list</a>
+                <h1 class="h1 col-8">Add job</h1>
+            </div>
+            <br/>
+            <br/>
+            <div class="row">
+                <div class="col-4">
+                    <label class="fs-3 fw-bold">Company Name:</label>
+                </div>
+                <div class="col-8">
+                    <input type="text" readonly class="form-control"
+                        th:value="${company.getCompName()}"
+                        th:attr="data-phone=${company.getPhone()}, data-email=${company.getEmail()}, data-weburl=${company.getWebUrl()}"
+                       id="companyName"/>
+                </div>
+            </div>
+            <div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="fs-3 fw-bold">Company contact:</label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" id="companyPhone" name="companyPhone" class="form-control" placeholder="Phone" readonly />
+                        <input type="text" id="companyEmail" name="companyEmail" class="form-control" placeholder="Email" readonly />
+                        <input type="text" id="companyWebUrl" name="companyWebUrl" class="form-control" placeholder="Web URL" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <label class="fs-3 fw-bold">Job Title:</label>
+                </div>
+                <div class="col-8">
+                    <input type="text" name="title" class="form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <label class="fs-3 fw-bold">Job Description:</label>
+                </div>
+                <div class="col-8">
+                    <textarea name="description" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary w-100 text-start" data-bs-toggle="modal" data-bs-target="#skillModal">
+                        Select skills
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <label class="fs-3 fw-bold">Selected Skills:</label>
+                </div>
+                <div class="col-8" id="selectedSkills">
+                    <!-- Selected skills will be displayed here -->
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="Submit" class="form-submit">
+            </div>
+        </form>
+    </div>
+    <!-- Skill Selection Modal -->
+    <div id="skillModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Skills</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text"
+                           placeholder="Search skills..."
+                           class="form-control mb-3">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Skill Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Select</th>
+                                    <th scope="col">Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skillList">
+                                <tr th:each="skill : ${skills}">
+                                    <td th:text="${skill.getSkillName()}"></td>
+                                    <td th:text="${skill.getSkillDescription()}"></td>
+                                    <td th:text="${skill.getType().toString()}"></td>
+                                    <td>
+                                        <input type="checkbox"
+                                               th:id="'skill-' + ${skill.getId()}"
+                                               th:data-id="${skill.getId()}"
+                                               th:data-name="${skill.getSkillName()}"
+                                               class="skill-checkbox"
+                                        />
+                                    </td>
+                                    <td>
+                                        <select name="skillLevels" class="form-select skill-level-select" th:disabled="true">
+                                            <option
+                                                    th:each="skillLevel : ${skillLevels}"
+                                                    th:value="${skillLevel.name()}"
+                                                    th:text="${skillLevel.name()}"
+                                            ></option>
+                                        </select>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="updateSkillSelections()">Add Selected Skills</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCompanyContact() {
+            const phone = document.getElementById('companyName').getAttribute('data-phone');
+            const email = document.getElementById('companyName').getAttribute('data-email');
+            const webUrl = document.getElementById('companyName').getAttribute('data-weburl');
+
+            document.getElementById('companyPhone').value = phone;
+            document.getElementById('companyEmail').value = email;
+            document.getElementById('companyWebUrl').value = webUrl;
+        }
+
+        updateCompanyContact();
+
+        function updateSkillSelections() {
+            const selectedSkillsContainer = document.getElementById('selectedSkills');
+            selectedSkillsContainer.innerHTML = ''; // Clear previous entries
+
+            const checkboxes = document.querySelectorAll('.skill-checkbox:checked');
+            checkboxes.forEach((checkbox) => {
+                const skillId = checkbox.dataset.id;
+                const skillName = checkbox.dataset.name;
+                const levelSelect = checkbox.closest('tr').querySelector('.skill-level-select');
+                const skillLevel = levelSelect.value;
+
+                if (!skillLevel) {
+                    alert(`Please select a level for the skill: ${skillName}`);
+                    return;
+                }
+
+                // Create hidden inputs for skill ID and level
+                const skillInput = document.createElement('input');
+                skillInput.type = 'hidden';
+                skillInput.readOnly = true;
+                skillInput.name = 'skills';
+                skillInput.value = skillId;
+
+                const displaySkill = document.createElement('p');
+                displaySkill.textContent = skillName + ' - ' + skillLevel;
+                selectedSkillsContainer.appendChild(displaySkill);
+
+                const levelInput = document.createElement('input');
+                levelInput.type = 'hidden';
+                levelInput.name = 'skillLevels';
+                levelInput.value = skillLevel;
+
+                selectedSkillsContainer.appendChild(skillInput);
+                selectedSkillsContainer.appendChild(levelInput);
+            });
+        }
+
+        // enable option when selecting a skill
+        function enableOption() {
+            const checkboxes = document.querySelectorAll('input[name="skills"]:checked');
+            checkboxes.forEach((checkbox) => {
+                const select = checkbox.closest('tr').querySelector('select');
+                select.disabled = false;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enable/disable skill level dropdown based on checkbox state
+            document.querySelectorAll('.skill-checkbox').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    const levelSelect = checkbox.closest('tr').querySelector('.skill-level-select');
+                    levelSelect.disabled = !checkbox.checked;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

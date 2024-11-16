@@ -1,7 +1,10 @@
 package iuh.frontend.controllers;
 
-import iuh.backend.models.Candidate;
-import iuh.backend.services.CandidateService;
+import com.neovisionaries.i18n.CountryCode;
+import iuh.backend.enums.SkillLevel;
+import iuh.backend.models.*;
+import iuh.backend.services.*;
+import jakarta.servlet.http.HttpSession;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,6 +25,14 @@ import java.util.stream.IntStream;
 public class CandidateController {
     @Autowired
     private CandidateService candidateService;
+    @Autowired
+    private SkillService skillService;
+    @Autowired
+    private CandidateSkillService candidateSkillService;
+    @Autowired
+    private AddressService addressService;
+    @Autowired
+    private JobService jobService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView showCandidateListPaging(@RequestParam("pageNo") Optional<Integer> pageNo, @RequestParam("pageSize") Optional<Integer> pageSize) {
@@ -34,13 +48,13 @@ public class CandidateController {
 
     @GetMapping("/add")
     public ModelAndView addCandidate() {
-        return new ModelAndView("candidates/add");
-    }
-
-    @PostMapping("/add")
-    public String addCandidate(@ModelAttribute Candidate candidate) {
-        candidateService.save(candidate);
-        return "redirect:/candidates";
+        ModelAndView mv = new ModelAndView();
+        Iterable<Skill> skills = skillService.findAll();
+        SkillLevel[] skillLevels = SkillLevel.values();
+        mv.addObject("skills", skills);
+        mv.addObject("skillLevels", skillLevels);
+        mv.setViewName("candidates/register");
+        return mv;
     }
 
     @GetMapping("/search")
@@ -70,5 +84,83 @@ public class CandidateController {
         }
 
         return mav;
+    }
+
+    @PostMapping("add-candidate")
+    public ModelAndView doAddCandidate(@RequestParam("email") String email,
+                                       @RequestParam("phone") String phone,
+                                       @RequestParam("fullName") String fullName,
+                                        @RequestParam("dob") String dob,
+                                        @RequestParam("number") String number,
+                                        @RequestParam("street") String street,
+                                        @RequestParam("city") String city,
+                                       @RequestParam("skills") List<Long> skillIds,
+                                       @RequestParam("skillLevels") List<String> skillLevels) {
+        ModelAndView mv = new ModelAndView();
+
+        Address address = new Address();
+        address.setNumber(number);
+        address.setStreet(street);
+        address.setCity(city);
+        address.setCountry(CountryCode.VN.getNumeric());
+        addressService.save(address);
+
+        Candidate candidate = new Candidate();
+        candidate.setEmail(email);
+        candidate.setPhone(phone);
+        candidate.setFullName(fullName);
+        candidate.setDob(LocalDate.parse(dob));
+        candidate.setAddress(address);
+        candidateService.save(candidate);
+
+        for (int i = 0; i < skillIds.size(); i++) {
+            CandidateSkill candidateSkill = new CandidateSkill();
+            CandidateSkillId candidateSkillId = new CandidateSkillId();
+            candidateSkillId.setCanId(candidate.getId());
+            candidateSkillId.setSkillId(skillIds.get(i));
+            Skill skill = skillService.findById(skillIds.get(i));
+            candidateSkill.setId(candidateSkillId);
+            candidateSkill.setSkill(skill);
+            candidateSkill.setSkillLevel(SkillLevel.valueOf(skillLevels.get(i)));
+            candidateSkill.setCan(candidate);
+            candidateSkillService.save(candidateSkill);
+        }
+
+        mv.setViewName("redirect:/login");
+        return mv;
+    }
+
+    @GetMapping("/dashboard")
+    public ModelAndView showDashboard(HttpSession session) {
+        Candidate candidate = (Candidate) session.getAttribute("candidate");
+
+        if (candidate == null) {
+            ModelAndView mv = new ModelAndView();
+            mv.setViewName("redirect:/login");
+            return mv;
+        }
+
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("candidate", candidate);
+
+        List<Job> recommendedJobs = jobService.findTop10Job();
+        mv.addObject("recommendedJobs", recommendedJobs);
+
+        List<CandidateSkill> candidateSkills = candidateSkillService.getCandidateSkills(candidate.getId());
+
+        List<Skill> skillsForCandidate = new ArrayList<>();
+        for (CandidateSkill candidateSkill : candidateSkills) {
+            Skill skill = skillService.findById(candidateSkill.getId().getSkillId());
+            skillsForCandidate.add(skill);
+        }
+
+        mv.addObject("skillsForCandidate", skillsForCandidate);
+//        List<Skill> candidateSkills = skillService.getCandidateSkills(candidate.getId());
+//        mv.addObject("candidateSkills", candidateSkills);
+
+//        List<Skill> recommendedSkills = skillService.getRecommendedSkills(candidate.getId());
+//        mv.addObject("recommendedSkills", recommendedSkills);
+        mv.setViewName("candidates/dashboard");
+        return mv;
     }
 }
