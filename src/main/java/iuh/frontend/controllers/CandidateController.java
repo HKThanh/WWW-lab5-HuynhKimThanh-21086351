@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -143,24 +140,59 @@ public class CandidateController {
         ModelAndView mv = new ModelAndView();
         mv.addObject("candidate", candidate);
 
-        List<Job> recommendedJobs = jobService.findTop10Job();
+        List<Job> recommendedJobs = jobService.findRecommendJobsForCandidate(candidate.getId());
         mv.addObject("recommendedJobs", recommendedJobs);
 
         List<CandidateSkill> candidateSkills = candidateSkillService.getCandidateSkills(candidate.getId());
 
-        List<Skill> skillsForCandidate = new ArrayList<>();
+        Map<Skill, String> skillsForCandidate = new HashMap<>();
         for (CandidateSkill candidateSkill : candidateSkills) {
             Skill skill = skillService.findById(candidateSkill.getId().getSkillId());
-            skillsForCandidate.add(skill);
+            skillsForCandidate.put(skill, candidateSkill.getSkillLevel().name());
         }
 
         mv.addObject("skillsForCandidate", skillsForCandidate);
-//        List<Skill> candidateSkills = skillService.getCandidateSkills(candidate.getId());
-//        mv.addObject("candidateSkills", candidateSkills);
+        mv.addObject("candidateSkills", candidateSkills);
 
-//        List<Skill> recommendedSkills = skillService.getRecommendedSkills(candidate.getId());
-//        mv.addObject("recommendedSkills", recommendedSkills);
+        List<Skill> recommendedSkills = skillService.findRecommendedSkillsForCandidate(candidate.getId());
+        mv.addObject("recommendedSkills", recommendedSkills);
+
+        SkillLevel[] skillLevels = SkillLevel.values();
+        mv.addObject("skillLevels", skillLevels);
+
+        List<Skill> skillNotInCandidate = skillService.findSkillNotInCandidate(candidate.getId());
+        mv.addObject("skillNotInCandidate", skillNotInCandidate);
+
         mv.setViewName("candidates/dashboard");
+        return mv;
+    }
+
+    @PostMapping("/update-skills")
+    public ModelAndView updateCandidateSkills(@RequestParam("skills") List<Long> skillIds,
+                                              @RequestParam("skillLevels") List<String> skillLevels,
+                                              HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        Candidate candidate = (Candidate) session.getAttribute("candidate");
+
+        if (candidate == null) {
+            mv.setViewName("redirect:/login");
+            return mv;
+        }
+
+        for (int i = 0; i < skillIds.size(); i++) {
+            CandidateSkill candidateSkill = new CandidateSkill();
+            CandidateSkillId candidateSkillId = new CandidateSkillId();
+            candidateSkillId.setCanId(candidate.getId());
+            candidateSkillId.setSkillId(skillIds.get(i));
+            Skill skill = skillService.findById(skillIds.get(i));
+            candidateSkill.setId(candidateSkillId);
+            candidateSkill.setSkill(skill);
+            candidateSkill.setSkillLevel(SkillLevel.valueOf(skillLevels.get(i)));
+            candidateSkill.setCan(candidate);
+            candidateSkillService.save(candidateSkill);
+        }
+
+        mv.setViewName("redirect:/candidates/dashboard");
         return mv;
     }
 }

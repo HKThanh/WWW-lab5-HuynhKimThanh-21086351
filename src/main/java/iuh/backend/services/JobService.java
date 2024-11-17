@@ -36,4 +36,8 @@ public class JobService {
     public List<Job> findTop10Job() {
         return jobRepository.findTop10ByOrderByIdDesc();
     }
+
+    public List<Job> findRecommendJobsForCandidate(Long canId) {
+        return jobRepository.findRecommendJobsForCandidate(canId);
+    }
 }

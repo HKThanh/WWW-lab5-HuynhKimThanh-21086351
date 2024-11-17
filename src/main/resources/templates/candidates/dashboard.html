@@ -18,7 +18,7 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
 </head>
 <body class="bg-light">
 <div class="container py-5">
-  <h1 class="display-4 mb-5">
+  <h1 class="display-4 mb-5 fw-bold">
     Hello <span th:text="${candidate.getFullName()}"></span>, Welcome Back!
   </h1>
 
@@ -36,27 +36,28 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         </div>
       </div>
     </div>
+    <a href="/jobs/list-jobs">All jobs</a>
   </section>
 
   <!-- Recommended Skills Section -->
-<!--  <section class="mb-5">-->
-<!--    <h2 class="h4 mb-3 fw-bold">Recommended Skills to Learn</h2>-->
-<!--    <div class="row g-4">-->
-<!--      <div th:each="skill : ${recommendedSkills}" class="col-md-4">-->
-<!--        <div class="card shadow-sm">-->
-<!--          <div class="card-body">-->
-<!--            <h3 class="h5 card-title" th:text="${skill.skillName}">Skill Name</h3>-->
-<!--            <p class="text-muted mb-3">This skill appears in multiple job postings</p>-->
-<!--            <div class="mb-3">-->
-<!--              <h4 class="fw-semibold mb-2">Why learn this?</h4>-->
-<!--              <p class="text-muted" th:text="${skill.skillDescription}">Description of why this skill would be valuable</p>-->
-<!--            </div>-->
-<!--            <button class="btn btn-success">Learn More</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </section>-->
+  <section class="mb-5">
+    <h2 class="h4 mb-3 fw-bold">Recommended Skills to Learn</h2>
+    <div class="row g-4">
+      <div th:each="skill : ${recommendedSkills}" class="col-md-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="h5 card-title" th:text="${skill.skillName}">Skill Name</h3>
+            <p class="text-muted mb-3">This skill appears in multiple job postings</p>
+            <div class="mb-3">
+              <h4 class="fw-semibold mb-2">Why learn this?</h4>
+              <p class="text-muted" th:text="${skill.skillDescription}">Description of why this skill would be valuable</p>
+            </div>
+            <button class="btn btn-success">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Your Skills Section -->
   <section>
@@ -64,13 +65,18 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="row g-4">
-          <div th:each="skill : ${skillsForCandidate}" class="col-md-6">
+          <div th:each="skill : ${skillsForCandidate.entrySet()}" class="col-md-6">
             <div class="d-flex justify-content-between align-items-center border-bottom py-2">
               <div>
-                <h3 class="h6 mb-0" th:text="${skill.skillName}"></h3>
-                <p class="text-muted small mb-0">Level: <span th:text="${skill.type}"></span></p>
+                <h3 class="h6 mb-0" th:text="${skill.getKey().skillName}"></h3>
+                <span>  </span>
+                <span th:text="${skill.getKey().type}" class="text-muted small mb-0"></span>
+                <p class="text-muted small mb-0">Level: <span th:text="${skill.getValue()}"></span></p>
               </div>
-              <button class="btn btn-link text-decoration-none">Update</button>
+              <button class="btn btn-link text-decoration-none"
+                        data-bs-toggle="modal"
+                        data-bs-target="#skillModal"
+              >Update</button>
             </div>
           </div>
         </div>
@@ -78,5 +84,115 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     </div>
   </section>
 </div>
+<!-- Skill Selection Modal -->
+<div id="skillModal" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Skills</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text"
+               placeholder="Search skills..."
+               class="form-control mb-3">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead class="table-light">
+            <tr>
+              <th scope="col">Skill Name</th>
+              <th scope="col">Description</th>
+              <th scope="col">Type</th>
+              <th scope="col">Select</th>
+              <th scope="col">Level</th>
+            </tr>
+            </thead>
+            <tbody id="skillList">
+            <tr th:each="skill : ${skillNotInCandidate}">
+              <td th:text="${skill.getSkillName()}"></td>
+              <td th:text="${skill.getSkillDescription()}"></td>
+              <td th:text="${skill.getType().toString()}"></td>
+              <td>
+                <input type="checkbox"
+                       th:id="'skill-' + ${skill.getId()}"
+                       th:data-id="${skill.getId()}"
+                       th:data-name="${skill.getSkillName()}"
+                       class="skill-checkbox"
+                />
+              </td>
+              <td>
+                <select name="skillLevels" class="form-select skill-level-select" th:disabled="true">
+                  <option
+                          th:each="skillLevel : ${skillLevels}"
+                          th:value="${skillLevel.name()}"
+                          th:text="${skillLevel.name()}"
+                  ></option>
+                </select>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" onclick="updateSkillSelections()"
+                data-bs-dismiss="modal" aria-label="Close"
+        >Add Selected Skills</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateSkillSelections() {
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = '/candidates/update-skills';
+
+    const checkboxes = document.querySelectorAll('.skill-checkbox:checked');
+    checkboxes.forEach((checkbox) => {
+      const skillId = checkbox.dataset.id;
+      const skillName = checkbox.dataset.name;
+      const levelSelect = checkbox.closest('tr').querySelector('.skill-level-select');
+      const skillLevel = levelSelect.value;
+
+      if (!skillLevel) {
+        alert(`Please select a level for the skill: ${skillName}`);
+        return;
+      }
+
+      // Create hidden inputs for skill ID and level
+      const skillInput = document.createElement('input');
+      skillInput.type = 'hidden';
+      skillInput.readOnly = true;
+      skillInput.name = 'skills';
+      skillInput.value = skillId;
+
+      const displaySkill = document.createElement('p');
+      displaySkill.textContent = skillName + ' - ' + skillLevel + ', ';
+      form.appendChild(displaySkill);
+
+      const levelInput = document.createElement('input');
+      levelInput.type = 'hidden';
+      levelInput.name = 'skillLevels';
+      levelInput.value = skillLevel;
+
+      form.appendChild(skillInput);
+      form.appendChild(levelInput);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Enable/disable skill level dropdown based on checkbox state
+    document.querySelectorAll('.skill-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const levelSelect = checkbox.closest('tr').querySelector('.skill-level-select');
+        levelSelect.disabled = !checkbox.checked;
+      });
+    });
+  });
+</script>
 </body>
 </html>

@@ -15,6 +15,10 @@ public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
+    public List<Skill> findSkillNotInCandidate(Long id) {
+        return skillRepository.findSkillNotInCandidate(id);
+    }
+
     public Skill save(Skill skill) {
         return skillRepository.save(skill);
     }
@@ -34,5 +38,9 @@ public class SkillService {
 
     public Iterable<Skill> findAll() {
         return skillRepository.findAll();
+    }
+
+    public List<Skill> findRecommendedSkillsForCandidate(Long candidateId) {
+        return skillRepository.findRecommendedSkillsForCandidate(candidateId);
     }
 }
