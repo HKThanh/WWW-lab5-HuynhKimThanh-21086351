@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -139,6 +140,12 @@ public class CandidateController {
 
         ModelAndView mv = new ModelAndView();
         mv.addObject("candidate", candidate);
+
+        boolean isExecuted = candidateService.executeScript("recommendation_script.py");
+
+        if (isExecuted) {
+            mv.addObject("isExecuted", true);
+        }
 
         List<Job> recommendedJobs = jobService.findRecommendJobsForCandidate(candidate.getId());
         mv.addObject("recommendedJobs", recommendedJobs);

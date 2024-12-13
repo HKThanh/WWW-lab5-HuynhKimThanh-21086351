@@ -28,4 +28,9 @@ public interface JobRepository extends PagingAndSortingRepository<Job, Long> {
             "JOIN js.skill s WHERE s IN " +
             "(SELECT s FROM CandidateSkill cs join cs.skill s WHERE cs.can.id = :candidateId)")
     List<Job> findRecommendJobsForCandidate(@Param("candidateId") Long canId);
+
+    @Query("SELECT j FROM Job j WHERE j.id IN :jobIds")
+    List<Job> findAllById(List<Long> jobIds);
+
+    List<Job> findByCompanyId(Long companyId);
 }

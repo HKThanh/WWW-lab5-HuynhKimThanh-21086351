@@ -1,9 +1,7 @@
 package iuh.frontend.controllers;
 
-import iuh.backend.models.Company;
-import iuh.backend.models.Job;
-import iuh.backend.services.CompanyService;
-import iuh.backend.services.JobService;
+import iuh.backend.models.*;
+import iuh.backend.services.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,6 +27,12 @@ public class CompanyController {
     private CompanyService companyService;
     @Autowired
     private JobService jobService;
+    @Autowired
+    private SkillService skillService;
+    @Autowired
+    private CandidateService candidateService;
+    @Autowired
+    private CandidateSkillService candidateSkillService;
 
     @RequestMapping("/list")
     public String listCompanies(Model model) {
@@ -74,5 +80,54 @@ public class CompanyController {
     public ModelAndView logout(HttpSession session) {
         session.removeAttribute("company");
         return new ModelAndView("companies/login");
+    }
+
+    @GetMapping(value = "/company-search")
+    public String showCompanySearch(Model model,HttpSession session){
+        Company company = (Company) session.getAttribute("company");
+        model.addAttribute("skill", skillService.findAll());
+
+        boolean isExecuted = candidateService.executeScript("recommendation_cansForjob_script.py");
+        if (isExecuted) {
+            model.addAttribute("isExecuted", true);
+        }
+
+        List<Job> jobs = jobService.findByCompanyId(company.getId());
+        List<Long> jobIds = jobs.stream().map(Job::getId).collect(Collectors.toList());
+        List<Candidate> candidates = candidateService.findRecommendedCandidatesForJob(jobIds);
+
+        model.addAttribute("recommendedCandidates", candidates);
+
+        if (company == null) {
+            return "companies/login";
+        }
+        else
+            return "companies/company-search";
+    }
+    @PostMapping(value = "/company-search")
+    public String searchCandidateBySkills(@RequestParam("skills") List<String> skillIds, Model model, HttpSession session) {
+        Company company = (Company) session.getAttribute("company");
+        if (company == null) {
+            return "companies/login";
+        }
+
+        List<Long> skillIdsLong = skillIds.stream()
+                .map(id -> {
+                    try {
+                        return skillService.findById(Long.parseLong(id.replaceAll("[\\[\\]]", "")));
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(Skill::getId)
+                .collect(Collectors.toList());
+
+
+        Map<Long, List<CandidateSkill>> candidateSkillsMap = candidateSkillService.findCandidatesBySkills(skillIdsLong);
+
+        model.addAttribute("candidateSkillsMap", candidateSkillsMap);
+        model.addAttribute("skill", skillService.findAll());
+        return "companies/company-search";
     }
 }

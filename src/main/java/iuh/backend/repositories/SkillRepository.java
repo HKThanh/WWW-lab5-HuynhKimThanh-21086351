@@ -18,9 +18,10 @@ public interface SkillRepository extends PagingAndSortingRepository<Skill, Long>
 
     Iterable<Skill> findAll();
 
-    @Query("SELECT DISTINCT s FROM Skill s WHERE s NOT IN " +
+    @Query("SELECT s FROM Skill s WHERE s NOT IN " +
             "(SELECT cs.skill FROM CandidateSkill cs WHERE cs.can.id = :candidateId) " +
-            "AND s IN (SELECT js.skill FROM JobSkill js)")
+            "AND s IN (SELECT js.skill FROM JobSkill js) " +
+            "GROUP BY s.skillName")
     List<Skill> findRecommendedSkillsForCandidate(@Param("candidateId") Long canId);
 
     @Query("SELECT s FROM Skill s WHERE s NOT IN " +

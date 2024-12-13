@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Candidates</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-
+T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous">
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-
+C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container my-5">
+    <h1 class="text-center mb-4">Search Candidates</h1>
+
+    <!-- Search Form -->
+    <form id="searchForm" action="/companies/company-search" method="post" class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="row g-3 mb-3">
+            <!-- Required Skills -->
+            <div class="col-md-4">
+                <label for="selectedSkills" class="form-label fw-bold">Required Skills</label>
+                <div class="position-relative">
+                    <input type="hidden" id="selectedSkills" name="skills">
+                    <button type="button"
+                            class="btn btn-outline-secondary w-100 text-start">
+                        Select Skills
+                    </button>
+                </div>
+                <div id="selectedSkillsContainer" class="mt-2 d-flex flex-wrap gap-2">
+                    <!-- Selected skills will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Minimum Experience -->
+            <div class="col-md-4">
+                <label for="experience" class="form-label fw-bold">Minimum Experience</label>
+                <select class="form-select" id="experience" name="experience">
+                    <option value="0">Any</option>
+                    <option value="1">1 Year</option>
+                    <option value="2">2 Years</option>
+                    <option value="3">3 Years</option>
+                    <option value="5">5+ Years</option>
+                </select>
+            </div>
+
+            <!-- Minimum Skill Level -->
+            <div class="col-md-4">
+                <label for="skillLevel" class="form-label fw-bold">Minimum Skill Level</label>
+                <select class="form-select" id="skillLevel" name="skillLevel">
+                    <option value="BEGINNER">BEGINNER</option>
+                    <option value="INTERMEDIATE">INTERMEDIATE</option>
+                    <option value="ADVANCED">ADVANCED</option>
+                    <option value="MASTER">MASTER</option>
+                    <option value="PROFESSIONAL">PROFESSIONAL</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                Search Candidates
+            </button>
+        </div>
+    </form>
+
+    <div class="bg-light p-4 rounded shadow-sm">
+        <h2 class="text-center mb-4">Recommended Candidates</h2>
+
+        <div id="recommendedCandidateList" class="list-group" th:each="candidate: ${recommendedCandidates}">
+            <!-- Example Candidate -->
+            <div class="list-group-item mb-3 p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h3 class="fw-bold mb-1" th:text="${candidate.fullName}"></h3>
+                        <p class="text-muted mb-0" th:text="${candidate.email}"></p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm"
+                            th:attr="data-email=${candidate.email}"
+                            onclick="showEmailModal(this.getAttribute('data-email'))">
+                        Send Invitation
+                    </button>
+                </div>
+<!--                <div class="mb-2">-->
+<!--                    <h5 class="fw-bold">Skills:</h5>-->
+<!--                    <div class="d-flex flex-wrap gap-2">-->
+<!--                        <span th:each="candidateSkill : ${entry.value}"-->
+<!--                              class="badge bg-primary text-light">-->
+<!--                            <span th:text="${candidateSkill.skill.skillName} + ' (' + ${candidateSkill.skillLevel} + ')'">-->
+<!--                            </span>-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                    <h5 class="fw-bold">Experience:</h5>-->
+<!--                    <p class="text-muted">Experience information not available</p>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="bg-light p-4 rounded shadow-sm">
+        <h2 class="text-center mb-4">Matching Candidates</h2>
+
+        <div id="candidateList" class="list-group" th:each="entry: ${candidateSkillsMap}">
+            <!-- Example Candidate -->
+            <div class="list-group-item mb-3 p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h3 class="fw-bold mb-1" th:text="${entry.value.can.fullName}"></h3>
+                        <p class="text-muted mb-0" th:text="${entry.value.can.email}"></p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm"
+                            th:attr="data-email=${entry.value.can.email}"
+                            onclick="showEmailModal(this.getAttribute('data-email'))">
+                        Send Invitation
+                    </button>
+                </div>
+                <div class="mb-2">
+                    <h5 class="fw-bold">Skills:</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span th:each="candidateSkill : ${entry.value}"
+                              class="badge bg-primary text-light">
+                            <span th:text="${candidateSkill.skill.skillName} + ' (' + ${candidateSkill.skillLevel} + ')'">
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Experience:</h5>
+                    <p class="text-muted">Experience information not available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Modal -->
+<div id="emailModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Invitation Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm">
+                    <input type="hidden" id="candidateEmail" name="candidateEmail">
+
+                    <!-- Subject -->
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <!-- Cancel Button -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <!-- Send Button -->
+                        <button type="submit" class="btn btn-success">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Skill selection modal-->
+<div id="skillModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Skills</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text"
+                       placeholder="Search skills..."
+                       class="form-control mb-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col">Skill Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Select</th>
+                        </tr>
+                        </thead>
+                        <tbody id="skillList">
+                        <tr th:each="skil : ${skill}">
+                            <td th:text="${skil.getSkillName()}"></td>
+                            <td th:text="${skil.getSkillDescription()}"></td>
+                            <td th:text="${skil.getType().toString()}"></td>
+                            <td>
+                                <input type="checkbox"
+                                       th:id="'skill-' + ${skil.getId()}"
+                                       th:data-id="${skil.getId()}"
+                                       th:data-name="${skil.getSkillName()}"
+                                       class="skill-checkbox"
+                                />
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="updateSkillSelections()">Add Selected Skills</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Show Email Modal
+    function showEmailModal(email) {
+        document.getElementById('candidateEmail').value = email;
+        new bootstrap.Modal(document.getElementById('emailModal')).show();
+    }
+
+    // Email Form Submit
+    document.getElementById('emailForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/companies/send-email', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                alert('Email sent successfully');
+                new bootstrap.Modal(document.getElementById('emailModal')).hide();
+            } else {
+                alert('Failed to send email');
+            }
+        });
+    });
+
+    // Select Skills Button
+    document.querySelector('#searchForm button').addEventListener('click', function () {
+        new bootstrap.Modal(document.getElementById('skillModal')).show();
+    });
+
+    // Skill Form Submit
+    function updateSkillSelections() {
+        const selectedSkills = [];
+        document.querySelectorAll('.skill-checkbox:checked').forEach(skill => {
+            selectedSkills.push({
+                id: skill.getAttribute('data-id'),
+                name: skill.getAttribute('data-name')
+            });
+        });
+
+        const selectedSkillsContainer = document.getElementById('selectedSkillsContainer');
+        selectedSkillsContainer.innerHTML = '';
+        selectedSkills.forEach(skill => {
+            const badge = document.createElement('span');
+            badge.classList.add('badge', 'bg-primary', 'text-light');
+            badge.textContent = skill.name;
+            selectedSkillsContainer.appendChild(badge);
+
+            const hiddenInput = document.getElementById('selectedSkills');
+            hiddenInput.value = JSON.stringify(selectedSkills);
+        });
+
+        new bootstrap.Modal(document.getElementById('skillModal')).hide();
+    }
+</script>
+</body>
+</html>
