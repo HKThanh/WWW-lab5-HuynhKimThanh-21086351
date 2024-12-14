@@ -173,4 +173,24 @@ public class JobController {
 
         return mv;
     }
+
+    @GetMapping("apply/{id}")
+    public String applyJob(@PathVariable("id") Long id, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+        Candidate candidate = (Candidate) session.getAttribute("candidate");
+
+        if (candidate == null) {
+            model.addAttribute("message", "Please login!");
+            return "candidates/login";
+        }
+
+        Job job = jobService.findById(id);
+
+        if (job == null) {
+            redirectAttributes.addFlashAttribute("message", "Job not found!");
+            return "redirect:/jobs/list-jobs";
+        }
+
+        redirectAttributes.addFlashAttribute("message", "Applied job successfully!");
+        return "redirect:/jobs/list-jobs";
+    }
 }

@@ -18,6 +18,9 @@ public class LoginController {
     @RequestMapping("/login")
     public String login(Model model) {
         String message = "";
+        if (model.containsAttribute("message")) {
+            message = (String) model.getAttribute("message");
+        }
         model.addAttribute("message", message);
         return "candidates/login";
     }
