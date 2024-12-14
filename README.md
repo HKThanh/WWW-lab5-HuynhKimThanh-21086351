@@ -42,9 +42,8 @@
 2. **Mở project bằng IntelliJ IDEA:**
    - Đảm bảo đã cài đặt các plugin như Lombok, Spring Boot, Spring Data JPA, Python, ...
 
-3. **Mở HeidiSQL và thực hiện một trong hai cách sau:**
-   - Tạo database có tên `works`.
-   - Hoặc chạy file `works.sql` trong folder db.
+3. **Mở HeidiSQL và thực hiện:**
+   - Chạy file `works.sql`.
 
 4. **Chỉnh sửa thông tin kết nối database trong file `application.properties`.**
 
