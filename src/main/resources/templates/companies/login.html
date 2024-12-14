@@ -14,6 +14,11 @@ T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             integrity="sha384-
 C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #B9E5E8;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -21,7 +26,11 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
+                    <a href="/jobs/list-jobs" class="text-center">Back to list</a>
                     <h3 class="text-center">Company Login</h3>
+                </div>
+                <div id="showMessage" class="row text-center">
+                    <span class="text-danger fs-4" th:text="${message}"></span>
                 </div>
                 <div class="card-body">
                     <form id="loginForm" name="loginForm" method="post" action="/companies/login">
@@ -36,10 +45,11 @@ C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Login</button>
                         </div>
-                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                            <span th:text="${error}" style="font-weight: bold; color: red;"></span>
-                        </div>
                     </form>
+                </div>
+                <div class="card-footer text-center">
+                    <span>Don't have a account? Click </span>
+                    <a href="/companies/register">Register</a>
                 </div>
             </div>
         </div>

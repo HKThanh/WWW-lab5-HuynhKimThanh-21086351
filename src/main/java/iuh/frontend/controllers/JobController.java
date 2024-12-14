@@ -38,7 +38,7 @@ public class JobController {
     @RequestMapping("/list-jobs")
     public String listJobs(HttpSession session, Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
         int currentPage = page.orElse(1);
-        int pageSize = size.orElse(5);
+        int pageSize = size.orElse(10);
 
         Page<Job> jobs = jobService.findAll(currentPage - 1, pageSize, "id", "asc");
 

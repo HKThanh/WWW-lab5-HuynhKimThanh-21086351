@@ -16,7 +16,9 @@ public class LoginController {
     private CandidateService candidateService;
 
     @RequestMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        String message = "";
+        model.addAttribute("message", message);
         return "candidates/login";
     }
 
